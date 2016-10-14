@@ -14,7 +14,7 @@ const cbioportal_client = (function () {
 			                                const arg_string = arg_strings.join('&') || '?';
 			                                        return $.ajax({
 				                                        type: 'POST',
-				                                        url: `//${__API_ROOT__}/${endpt}`,
+				                                        url: `//${__API_ROOT__}${endpt}`,
 				                                        data: arg_string,
 				                                        dataType: 'json',
 			});

@@ -38,7 +38,8 @@ export class ClinicalInformationContainerUnconnected extends React.Component {
         return (
             <div>
                 <h4>Samples</h4>
-
+                <a onClick={this.props.startClock}>click me</a>
+                <h1>{this.props.counter}</h1>
                 <ClinicalInformationSamples data={this.props.samples} />
 
                 <h4>Patient</h4>

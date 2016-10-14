@@ -10,7 +10,7 @@ export const actionTypes = {
 };
 
 export const initialState = Immutable.fromJS({
-    status: 'fetching', activeTab: 1,
+    status: 'fetching', activeTab: 1, counter: 0
 });
 
 
@@ -50,6 +50,9 @@ export default function reducer(state = initialState, action = {}) {
 
             return state.set('activeTab', action.payload);
 
+        case 'increasing':
+            return state.set('counter', state.get('counter') + 1);
+
         default:
 
             return state;
@@ -88,7 +91,17 @@ export const actionCreators = {
 
     loadClinicalInformationTableData,
     setTab,
+    startClock
+};
 
+export function startClock(){
+    return (dispatch) => {
+        setInterval(()=>{
+            dispatch({
+                type: 'increasing'
+            });
+        }, 2000);
+    };
 };
 
 export const mapStateToProps = function mapStateToProps(state) {
@@ -98,5 +111,6 @@ export const mapStateToProps = function mapStateToProps(state) {
         activeTab: state.get('clinicalInformation').get('activeTab'),
         patient: state.get('clinicalInformation').get('patient'),
         nodes: state.get('clinicalInformation').get('nodes'),
+        counter: state.get('clinicalInformation').get('counter')
     };
 };
