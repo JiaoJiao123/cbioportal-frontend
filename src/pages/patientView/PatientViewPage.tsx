@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as _ from 'lodash';
-import $ from 'jquery';
+import  'jquery';
 import { default as ReactBootstrap} from 'react-bootstrap';
 import GenomicOverview from './genomicOverview/GenomicOverview';
 import { ClinicalData } from "shared/api/generated/CBioPortalAPI";
@@ -29,9 +29,8 @@ import LoadingIndicator from "shared/components/loadingIndicator/LoadingIndicato
 import ValidationAlert from "shared/components/ValidationAlert";
 import AjaxErrorModal from "shared/components/AjaxErrorModal";
 import AppConfig from 'appConfig';
-
+import IgvViewer from './igv';
 import './patient.scss';
-import IFrameLoader from "../../shared/components/iframeLoader/IFrameLoader";
 
 const patientViewPageStore = new PatientViewPageStore();
 
@@ -169,7 +168,7 @@ export default class PatientViewPage extends React.Component<IPatientViewPagePro
 
         if (patientViewPageStore.studyMetaData.isComplete) {
             let study = patientViewPageStore.studyMetaData.result;
-            studyName = <a href={`study?id=${study.studyId}`} className="studyMetaBar_studyName">{study.name}</a>;
+            studyName = <a href={`study.do?cancer_study_id=${study.studyId}`} className="studyMetaBar_studyName">{study.name}</a>;
         }
 
         if (patientViewPageStore.patientViewData.isComplete && patientViewPageStore.studyMetaData.isComplete) {
@@ -217,7 +216,6 @@ export default class PatientViewPage extends React.Component<IPatientViewPagePro
             cohortNav = (
                 <PaginationControls
                     currentPage={indexInCohort + 1}
-                    showMoreButton={false}
                     showItemsPerPageSelector={false}
                     showFirstPage={true}
                     showLastPage={true}
@@ -302,20 +300,11 @@ export default class PatientViewPage extends React.Component<IPatientViewPagePro
                             />
 
                             {
-                                (patientViewPageStore.mutationData.isComplete && patientViewPageStore.cnaSegments.isComplete
-                                && patientViewPageStore.sequencedSampleIdsInStudy.isComplete && sampleManager)
+                                (patientViewPageStore.mutationData.isComplete && patientViewPageStore.cnaSegments.isComplete && sampleManager)
                                 && ( patientViewPageStore.mutationData.result.length > 0 || patientViewPageStore.cnaSegments.result.length > 0)
                                 && (
                                     <div>
-                                        <GenomicOverview
-                                            mergedMutations={patientViewPageStore.mergedMutationData}
-                                            sequencedSamples={patientViewPageStore.sequencedSampleIdsInStudy.result}
-                                            cnaSegments={patientViewPageStore.cnaSegments.result}
-                                            sampleOrder={sampleManager.sampleIndex}
-                                            sampleLabels={sampleManager.sampleLabels}
-                                            sampleColors={sampleManager.sampleColors}
-                                            sampleManager={sampleManager}
-                                            getContainerWidth={()=>$(window).width()}
+                                        <IgvViewer
                                         />
                                         <hr />
                                     </div>
@@ -411,7 +400,8 @@ export default class PatientViewPage extends React.Component<IPatientViewPagePro
                             hide={(patientViewPageStore.pathologyReport.isComplete && patientViewPageStore.pathologyReport.result.length === 0)}
                             loading={patientViewPageStore.pathologyReport.isPending}
                     >
-                        <div>
+                        <div style={{position:"relative"}}>
+                            <ThreeBounce className="center-block text-center" /> {/*Put it underneath so it gets covered by loaded element*/}
                             <PathologyReport iframeStyle={{position:"absolute", top:0}} pdfs={patientViewPageStore.pathologyReport.result} />
                         </div>
                     </MSKTab>
@@ -421,7 +411,11 @@ export default class PatientViewPage extends React.Component<IPatientViewPagePro
                              hide={(patientViewPageStore.MDAndersonHeatMapAvailable.isComplete && !patientViewPageStore.MDAndersonHeatMapAvailable.result)}
                             loading={patientViewPageStore.MDAndersonHeatMapAvailable.isPending}
                     >
-                            <IFrameLoader height={700} url={ `//bioinformatics.mdanderson.org/TCGA/NGCHMPortal/?participant=${patientViewPageStore.patientId}` } />
+                        <div style={{position:"relative"}}>
+                            <ThreeBounce className="center-block text-center" /> {/*Put it underneath so it gets covered by loaded element*/}
+                            <iframe style={{position:"absolute", top:0, width:'100%', height:700, border:'none'}}
+                                    src={ `//bioinformatics.mdanderson.org/TCGA/NGCHMPortal/?participant=${patientViewPageStore.patientId}` }></iframe>
+                        </div>
                     </MSKTab>
 
                     <MSKTab key={5} id="tissueImageTab" linkText="Tissue Image"
@@ -430,7 +424,9 @@ export default class PatientViewPage extends React.Component<IPatientViewPagePro
                             loading={patientViewPageStore.hasTissueImageIFrameUrl.isPending}
                     >
                         <div style={{position: "relative"}}>
-                            <IFrameLoader height={700} url={  `http://cancer.digitalslidearchive.net/index_mskcc.php?slide_name=${patientViewPageStore.patientId}` } />
+                            <ThreeBounce className="center-block text-center" /> {/*Put it underneath so it gets covered by loaded element*/}
+                            <iframe style={{position:"absolute", top:0, width:'100%', height:700, border:'none'}}
+                                    src={ `http://cancer.digitalslidearchive.net/index_mskcc.php?slide_name=${patientViewPageStore.patientId}` }></iframe>
                         </div>
                     </MSKTab>
 
